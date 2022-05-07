@@ -147,8 +147,9 @@ void keyGet()
 {
 	char buf[20];
 	 KEY=key_scan();
-	 sprintf(buf,"%d",KEY);
+	 sprintf(buf,"%02d",KEY);
 	 display_GB2312_string(5,1,buf);
+
 }
 /* USER CODE END 0 */
 
@@ -201,7 +202,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  display_GB2312_string(1,1,"≈©Ω‹”±");
+  display_GB2312_string(1,1," ≈©Ω‹”±");
   while (1)
   {
 	  keyGet();
