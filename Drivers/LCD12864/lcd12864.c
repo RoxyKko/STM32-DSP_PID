@@ -6,10 +6,10 @@ void JLX12864G_086_GPIOInit(void)
 {
 	//
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	delay_us(50000);
 	
 	
 	
+
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	  __HAL_RCC_GPIOH_CLK_ENABLE();
