@@ -7,13 +7,48 @@
 #include "main.h"
 #include "gpio.h"
 
-// 定义可能会出现的兼容变量类型
-#define u32 uint32_t
-#define u16 uint16_t
-#define u8 uint8_t
-#define s32 int32_t
-#define s16 int16_t
-#define s8 int8_t
+//// 定义可能会出现的兼容变量类型
+//#define u32 uint32_t
+//#define u16 uint16_t
+//#define u8 uint8_t
+//#define s32 int32_t
+//#define s16 int16_t
+//#define s8 int8_t
+
+//定义一些常用的数据类型短关键字
+typedef int32_t  s32;
+typedef int16_t s16;
+typedef int8_t  s8;
+
+typedef const int32_t sc32;
+typedef const int16_t sc16;
+typedef const int8_t sc8;
+
+typedef __IO int32_t  vs32;
+typedef __IO int16_t  vs16;
+typedef __IO int8_t   vs8;
+
+typedef __I int32_t vsc32;
+typedef __I int16_t vsc16;
+typedef __I int8_t vsc8;
+
+typedef uint32_t  u32;
+typedef uint16_t u16;
+typedef uint8_t  u8;
+
+typedef const uint32_t uc32;
+typedef const uint16_t uc16;
+typedef const uint8_t uc8;
+
+typedef __IO uint32_t  vu32;
+typedef __IO uint16_t vu16;
+typedef __IO uint8_t  vu8;
+
+typedef __I uint32_t vuc32;
+typedef __I uint16_t vuc16;
+typedef __I uint8_t vuc8;
+
+
 
 // LED电平设置 0-亮 1-灭
 #define LED0(n) (n?HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_SET):HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_RESET))
@@ -96,4 +131,9 @@ void delay_ns (u8 t);
 #define PJin(n) BIT_ADDR(GPIOJ_IDR_Addr,n) //输入
 #define PKout(n) BIT_ADDR(GPIOK_ODR_Addr,n) //输出
 #define PKin(n) BIT_ADDR(GPIOK_IDR_Addr,n) //输入
+
+
+
+
+
 #endif
