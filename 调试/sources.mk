@@ -26,5 +26,6 @@ Core/Startup \
 Drivers/LCD12864 \
 Drivers/NJY_KEY \
 Drivers/STM32F4xx_HAL_Driver/Src \
+Drivers/W25QXX \
 Drivers/base \
 
