@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -30,6 +31,7 @@
 #include "lcd12864.h"
 #include "arm_math.h"
 #include "NJY_KEY.h"
+#include "w25qxx.h"
 
 /* USER CODE END Includes */
 
@@ -43,6 +45,8 @@ typedef struct{
 
 PidCtrlTypedef pidCtrl;						//pidt调节实例
 
+
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -51,7 +55,7 @@ PidCtrlTypedef pidCtrl;						//pidt调节实例
 #define BUF_LEN					400			//采样数组长度
 #define PWM_PERIOD_CCR1			8000		//PWM周期-计数值
 //#define DES_VOL					1.0			//目标电压
-#define ERR_LIMIT				0.05		//误差限制
+#define ERR_LIMIT				0.03		//误差限制
 
 /* USER CODE END PD */
 
@@ -76,7 +80,13 @@ u8 KEY=0;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc);								/*ADC-DMA全传输完成回调函数*/
+float calVol();																		/*根据原始采样值计算PWM等效电压值*/
+void pidInit();																		/*PID初始化*/
+static void pidExecu(float vol);													/*PID执行*/
+void keySwitch();																	/*矩阵键盘各个按键功能*/
+void keyGet();																		/*矩阵键盘输入与显示*/
+void numError();																	/*数值限制器*/
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -142,14 +152,110 @@ static void pidExecu(float vol)
 		htim3.Instance->CCR1 = (u32)(pidCtrl.out * (htim3.Instance->CCR1 + 1)/vol);
 	}
 }
+
+/*矩阵键盘各个按键功能*/
+void keySwitch()
+{
+	switch(KEY)
+		 {
+		 case 1:
+		 {
+			 break;
+		 }
+		 case 2:
+		 {
+			 break;
+		 }
+		 case 3:
+		 {
+			 HAL_Delay(100);DES_VOL+=0.1;break;
+		 }
+		 case 4:
+		 {
+			 HAL_Delay(100);DES_VOL-=0.1;break;
+		 }
+		 case 5:
+		 {
+			 break;
+		 }
+		 case 6:
+		 {
+			 break;
+		 }
+		 case 7:
+		 {
+			 HAL_Delay(100);DES_VOL+=1.0;break;
+		 }
+		 case 8:
+		 {
+			 HAL_Delay(100);DES_VOL-=1.0;break;
+		 }
+		 case 9:
+		 {
+			 break;
+		 }
+		 case 10:
+		 {
+			 break;
+		 }
+		 case 11:
+		 {
+			 break;
+		 }
+		 case 12:
+		 {
+			 break;
+		 }
+		 case 13:
+		 {
+			 break;
+		 }
+		 case 14:
+		 {
+			 break;
+		 }
+		 case 15:
+		 {
+			 break;
+		 }
+		 case 16:
+		 {
+			 break;
+		 }
+		 default:break;
+		 }
+}
+
 /*矩阵键盘输入与显示*/
 void keyGet()
 {
 	char buf[20];
 	 KEY=key_scan();
-	 sprintf(buf,"%d",KEY);
+	 keySwitch();
+	 numError();
+
+	 sprintf(buf,"%02.3f",DES_VOL);
 	 display_GB2312_string(5,1,buf);
+
+	 sprintf(buf,"%02d",KEY);
+	 display_GB2312_string(7,1,buf);
+
+
 }
+
+/*数值限制器*/
+void numError()
+{
+	if(DES_VOL <= 0)
+	{
+		DES_VOL=0;
+	}
+	if(DES_VOL >= 3.3)
+	{
+		DES_VOL=3.3;
+	}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -186,6 +292,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   delay_init(84);
   JLX12864G_086_GPIOInit();					//屏幕引脚初始化
@@ -195,13 +302,19 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);				//开启tim2时钟
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);	//开启PWM波输出
   HAL_ADC_Start_DMA(&hadc1, (u32*)adc_raw, BUF_LEN);	//开启ADC-DMA传输
+  W25QXX_Init();							//W25QXX初始化
+  delay_ms(50);
+
+  //清除内部flash全部数据
+
+
 
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  display_GB2312_string(1,1,"农杰颖");
+  display_GB2312_string(1,1," 农杰颖 ");
   while (1)
   {
 	  keyGet();

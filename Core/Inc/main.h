@@ -63,10 +63,6 @@ void Error_Handler(void);
 #define KEY_col2_GPIO_Port GPIOE
 #define KEY_col1_Pin GPIO_PIN_6
 #define KEY_col1_GPIO_Port GPIOE
-#define KEY_col0_Pin GPIO_PIN_0
-#define KEY_col0_GPIO_Port GPIOF
-#define KEY_row3_Pin GPIO_PIN_2
-#define KEY_row3_GPIO_Port GPIOF
 #define KEY_row2_Pin GPIO_PIN_4
 #define KEY_row2_GPIO_Port GPIOF
 #define KEY_row1_Pin GPIO_PIN_6
