@@ -1,0 +1,2 @@
+../Drivers/NJY_KEY/NJY_KEY.c:9:6:key_reinit	8	static
+../Drivers/NJY_KEY/NJY_KEY.c:17:9:key_scan	16	static

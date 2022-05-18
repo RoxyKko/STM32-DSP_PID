@@ -1,0 +1,16 @@
+../Drivers/W25QXX/w25qxx.c:18:13:SPI1_ReadWriteByte	32	static
+../Drivers/W25QXX/w25qxx.c:28:6:W25QXX_Init	32	static
+../Drivers/W25QXX/w25qxx.c:52:4:W25QXX_ReadSR	16	static
+../Drivers/W25QXX/w25qxx.c:69:6:W25QXX_Write_SR	16	static
+../Drivers/W25QXX/w25qxx.c:78:6:W25QXX_Write_Enable	8	static
+../Drivers/W25QXX/w25qxx.c:86:6:W25QXX_Wait_Busy	8	static
+../Drivers/W25QXX/w25qxx.c:92:6:W25QXX_Write_Disable	8	static
+../Drivers/W25QXX/w25qxx.c:110:5:W25QXX_ReadID	16	static
+../Drivers/W25QXX/w25qxx.c:131:6:W25QXX_Erase_Chip	8	static
+../Drivers/W25QXX/w25qxx.c:148:6:W25QXX_Erase_Sector	16	static
+../Drivers/W25QXX/w25qxx.c:163:6:W25QXX_PowerDown	8	static
+../Drivers/W25QXX/w25qxx.c:172:6:W25QXX_WAKEUP	8	static
+../Drivers/W25QXX/w25qxx.c:189:6:W25QXX_Read	24	static
+../Drivers/W25QXX/w25qxx.c:214:6:W25QXX_Write_Page	24	static
+../Drivers/W25QXX/w25qxx.c:241:6:W25QXX_PageWrite	32	static
+../Drivers/W25QXX/w25qxx.c:317:6:W25QXX_SectorWrite	40	static
