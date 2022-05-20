@@ -79,7 +79,7 @@ u16 adc_raw_copy[BUF_LEN] = {0};			//adc原始采样值备份
 float cur_vol = 0;							//当前电压
 u8 KEY=0;
 
-float DES_INT = 0.1	;						//目标电流
+float DES_INT = 0.5;						//目标电流
 u16 adc2_raw[BUF_LEN] = {0};				//adc2原始采样值
 u16 adc2_raw_copy[BUF_LEN] = {0};			//adc2原始采样值备份
 float cur_int = 0;							//当前电压
@@ -116,6 +116,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 	dma_cpl_flag = 1;
 }
 
+float V=0;
 /*根据原始采样值计算PWM等效电压值*/
 float calVol()
 {
@@ -126,16 +127,16 @@ float calVol()
 	float tempVal;
 	for(i=0;i<BUF_LEN;i++)
 	{
-		tempVal=adc_raw_copy[i] * 3.3 / 4095;
+		tempVal=adc_raw_copy[i] * 3.2927 / 4095;
 		sum+=tempVal;
 	}
 
 	res = sum / BUF_LEN;
 
 	cur_vol = res;
-	sprintf(buf,"%.3f",cur_vol*7.02);
-	display_GB2312_string(3,1,buf);
 
+	sprintf(buf,"%.3f",cur_vol*7);
+	display_GB2312_string(3,1,buf);
 	return res;
 }
 
@@ -149,7 +150,7 @@ float calInt()
 	float tempIns;
 	for(i=0;i<BUF_LEN;i++)
 	{
-		tempIns=adc2_raw_copy[i] * 3.3 / 4095;
+		tempIns=adc2_raw_copy[i] * 3.2927 / 4095;
 		sum+=tempIns;
 	}
 
@@ -157,7 +158,7 @@ float calInt()
 
 	cur_int = res;
 	sprintf(buf,"%.3f",cur_int);
-	display_GB2312_string(5,50,buf);
+	display_GB2312_string(5,1,buf);
 
 	return res;
 }
@@ -259,11 +260,11 @@ void keySwitch()
 		 }
 		 case 3:
 		 {
-			 HAL_Delay(100);DES_VOL+=0.01423;break;
+			 HAL_Delay(100);DES_VOL+=0.01428;break;			//  0.1/7.0   +0.1V
 		 }
 		 case 4:
 		 {
-			 HAL_Delay(100);DES_VOL-=0.01423;break;
+			 HAL_Delay(100);DES_VOL-=0.01428;break;			//-0.1V
 		 }
 		 case 5:
 		 {
@@ -275,11 +276,11 @@ void keySwitch()
 		 }
 		 case 7:
 		 {
-			 HAL_Delay(100);DES_VOL+=0.14238;break;
+			 HAL_Delay(100);DES_VOL+=0.14285;break;
 		 }
 		 case 8:
 		 {
-			 HAL_Delay(100);DES_VOL-=0.14238;break;
+			 HAL_Delay(100);DES_VOL-=0.14285;break;
 		 }
 		 case 9:
 		 {
@@ -307,11 +308,12 @@ void keySwitch()
 		 }
 		 case 15:
 		 {
+			 DES_INT+=0.1;
 			 break;
 		 }
 		 case 16:
 		 {
-
+			 DES_INT-=0.1;
 			 break;
 		 }
 		 default:break;
@@ -326,10 +328,10 @@ void keyGet()
 	 keySwitch();
 	 numError();
 
-	 sprintf(buf,"%02.3f",DES_VOL*7.02);
+	 sprintf(buf,"%02.3f",DES_VOL*7);
 	 display_GB2312_string(3,60,buf);
 
-	 sprintf(buf,"%02d",DES_INT);
+	 sprintf(buf,"%02.3f",DES_INT);
 	 display_GB2312_string(5,60,buf);
 
 
@@ -342,9 +344,18 @@ void numError()
 	{
 		DES_VOL=0;
 	}
-	if(DES_VOL >= 2.5714)
+	if(DES_VOL >= 2.5714)		//  18/7
 	{
 		DES_VOL=2.5714;
+	}
+
+	if(DES_INT <= 0)
+	{
+		DES_INT=0;
+	}
+	if(DES_INT >= 2.4)
+	{
+		DES_INT=2.4;
 	}
 }
 
@@ -410,16 +421,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  char buf[128];
 //  display_GB2312_string(1,1," 农杰颖 ");
   while (1)
   {
 	  keyGet();
 	  dutyCycle();
+
 	  if(dma_cpl_flag == 1 && autoPidFlag == 1)
 	  {
 		  dma_cpl_flag = 0 ;
 		  pidExecu(calVol());
-		  calInt();
+		  autoBlock(calInt());
+		  //V=calVol();
 	  }
 
 
