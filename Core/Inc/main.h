@@ -73,6 +73,8 @@ void Error_Handler(void);
 #define KEY_row0_GPIO_Port GPIOF
 #define KEY_row1_Pin GPIO_PIN_6
 #define KEY_row1_GPIO_Port GPIOF
+#define LED_Pin GPIO_PIN_8
+#define LED_GPIO_Port GPIOF
 #define Lock_Pin GPIO_PIN_4
 #define Lock_GPIO_Port GPIOA
 #define ROM_IN_Pin GPIO_PIN_4

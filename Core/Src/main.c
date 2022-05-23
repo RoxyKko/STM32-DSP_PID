@@ -58,9 +58,12 @@ PidCtrlTypedef pid2;						//电流pid
 #define ERR_LIMIT					0.001		//误差限制
 #define MAX_PWM					0.78		//最大占空比
 #define MIN_PWM					0.01		//最大占空比
+#define Vol_step					0.1/6		//Vol步进，步进0.1，硬件采集/6倍
 
 #define blockade HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
 #define blockadeOFF HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
+#define LED_ON HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_RESET)
+#define LED_OFF HAL_GPIO_WritePin(GPIOF, GPIO_PIN_8, GPIO_PIN_SET)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -79,7 +82,8 @@ u16 adc_raw_copy[BUF_LEN] = {0};			//adc原始采样值备份
 float cur_vol = 0;							//当前电压
 u8 KEY=0;
 
-float DES_INT = 0.1	;						//目标电流
+
+float DES_INT = 0.5	;						//目标电流
 u16 adc2_raw[BUF_LEN] = {0};				//adc2原始采样值
 u16 adc2_raw_copy[BUF_LEN] = {0};			//adc2原始采样值备份
 float cur_int = 0;							//当前电压
@@ -115,7 +119,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 	memcpy((void *)adc2_raw_copy,(void *)adc2_raw,sizeof(adc2_raw));
 	dma_cpl_flag = 1;
 }
-
+float V=0;
 /*根据原始采样值计算PWM等效电压值*/
 float calVol()
 {
@@ -126,14 +130,19 @@ float calVol()
 	float tempVal;
 	for(i=0;i<BUF_LEN;i++)
 	{
-		tempVal=adc_raw_copy[i] * 3.3 / 4095;
+
+		tempVal=adc_raw_copy[i] * 3.3/ 4108;
+		if(tempVal<=1.5)					{tempVal+=0.0025;}
+//		else if(tempVal>1.5&&tempVal<=2.0)	{tempVal=tempVal-0.1*tempVal+0.2;}
+//		V=adc_raw_copy[i];
 		sum+=tempVal;
 	}
 
 	res = sum / BUF_LEN;
-
+	V=res;						//AD校准
 	cur_vol = res;
-	sprintf(buf,"%.3f",cur_vol*7.02);
+//	sprintf(buf,"%.3f",cur_vol*6);
+	sprintf(buf,"%.3f",V);
 	display_GB2312_string(3,1,buf);
 
 	return res;
@@ -149,7 +158,9 @@ float calInt()
 	float tempIns;
 	for(i=0;i<BUF_LEN;i++)
 	{
-		tempIns=adc2_raw_copy[i] * 3.3 / 4095;
+		tempIns=adc2_raw_copy[i] * 3.3 / 4060;
+		if(tempIns<=1.5)					{tempIns+=0.042;}
+		else if(tempIns>1.5&&tempIns<=2.0)	{tempIns=tempIns-0.1*tempIns+0.2;}
 		sum+=tempIns;
 	}
 
@@ -157,7 +168,7 @@ float calInt()
 
 	cur_int = res;
 	sprintf(buf,"%.3f",cur_int);
-	display_GB2312_string(5,50,buf);
+	display_GB2312_string(5,1,buf);
 
 	return res;
 }
@@ -190,11 +201,13 @@ static void pidExecu(float vol)
 		//	当前占空比			调节后占空比
 		if(pidCtrl.out * (htim3.Instance->CCR1 + 1)/vol >= (htim3.Instance->ARR+1)*MAX_PWM)
 		{
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1,PWM_PERIOD_CCR1*MAX_PWM);
+			//__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1,PWM_PERIOD_CCR1*MAX_PWM);
+			htim3.Instance->CCR1 = (PWM_PERIOD_CCR1*MAX_PWM);
 		}
 		else if(pidCtrl.out * (htim3.Instance->CCR1 + 1)/vol <= (htim3.Instance->ARR+1)*MIN_PWM)
 		{
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1,PWM_PERIOD_CCR1*MIN_PWM);
+			//__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1,PWM_PERIOD_CCR1*MIN_PWM);
+			htim3.Instance->CCR1 = (PWM_PERIOD_CCR1*MIN_PWM);
 		}
 		else
 		{
@@ -205,16 +218,19 @@ static void pidExecu(float vol)
 	}
 }
 
+/*自动封锁软启动*/
 void autoBlock(float vol)
 {
 	if(vol > DES_INT)
 	{
-		blockade;
+		blockade;LED_ON;
 		HAL_Delay(100);
+
 	}
 	else
 	{
 		blockadeOFF;
+		LED_OFF;
 	}
 
 }
@@ -259,11 +275,11 @@ void keySwitch()
 		 }
 		 case 3:
 		 {
-			 HAL_Delay(100);DES_VOL+=0.01423;break;
+			 HAL_Delay(100);DES_VOL+=Vol_step;break;
 		 }
 		 case 4:
 		 {
-			 HAL_Delay(100);DES_VOL-=0.01423;break;
+			 HAL_Delay(100);DES_VOL-=Vol_step;break;
 		 }
 		 case 5:
 		 {
@@ -275,11 +291,11 @@ void keySwitch()
 		 }
 		 case 7:
 		 {
-			 HAL_Delay(100);DES_VOL+=0.14238;break;
+			 HAL_Delay(100);DES_VOL+=10*Vol_step;break;
 		 }
 		 case 8:
 		 {
-			 HAL_Delay(100);DES_VOL-=0.14238;break;
+			 HAL_Delay(100);DES_VOL-=10*Vol_step;break;
 		 }
 		 case 9:
 		 {
@@ -303,15 +319,17 @@ void keySwitch()
 		 }
 		 case 14:
 		 {
+			 blockadeOFF;
 			 break;
 		 }
 		 case 15:
 		 {
+			 DES_INT+=0.1;
 			 break;
 		 }
 		 case 16:
 		 {
-
+			 DES_INT-=0.1;
 			 break;
 		 }
 		 default:break;
@@ -326,7 +344,7 @@ void keyGet()
 	 keySwitch();
 	 numError();
 
-	 sprintf(buf,"%02.3f",DES_VOL*7.02);
+	 sprintf(buf,"%02.3f",DES_VOL*6);
 	 display_GB2312_string(3,60,buf);
 
 	 sprintf(buf,"%02d",DES_INT);
@@ -342,9 +360,17 @@ void numError()
 	{
 		DES_VOL=0;
 	}
-	if(DES_VOL >= 2.5714)
+	if(DES_VOL >= 3)
 	{
-		DES_VOL=2.5714;
+		DES_VOL=3                ;
+	}
+	if(DES_INT <= 0)
+	{
+		DES_INT=0;
+	}
+	if(DES_INT >= 2.4)
+	{
+		DES_INT=2.4;
 	}
 }
 
@@ -396,14 +422,15 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);				//开启tim2时钟
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);	//开启PWM波输出
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);	//开启PWM波输出
+
   HAL_ADC_Start_DMA(&hadc1, (u32*)adc_raw, BUF_LEN);	//开启ADC-DMA传输
   HAL_ADC_Start_DMA(&hadc2, (u32*)adc2_raw, BUF_LEN);	//开启ADC-DMA传输
   W25QXX_Init();							//W25QXX初始化
   delay_ms(50);
-
+  __HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_1,compare);
   //清除内部flash全部数据
 
-
+  LED_OFF;
 
 
   /* USER CODE END 2 */
@@ -419,6 +446,7 @@ int main(void)
 	  {
 		  dma_cpl_flag = 0 ;
 		  pidExecu(calVol());
+		  autoBlock(calInt());
 		  calInt();
 	  }
 
