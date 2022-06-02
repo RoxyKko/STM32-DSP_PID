@@ -33,7 +33,7 @@ Drivers/LCD12864/lcd12864.o: ../Drivers/LCD12864/lcd12864.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/gpio.h ../Core/Inc/main.h \
- D:/cubeIDE/oled_v1.6/Drivers/base/base.h ../Core/Inc/main.h
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h ../Core/Inc/main.h
 ../Drivers/LCD12864/lcd12864.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
@@ -69,5 +69,5 @@ Drivers/LCD12864/lcd12864.o: ../Drivers/LCD12864/lcd12864.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Core/Inc/gpio.h:
 ../Core/Inc/main.h:
-D:/cubeIDE/oled_v1.6/Drivers/base/base.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h:
 ../Core/Inc/main.h:

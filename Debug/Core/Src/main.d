@@ -33,11 +33,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/dma.h ../Core/Inc/spi.h \
  ../Core/Inc/tim.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- D:/cubeIDE/oled_v1.6/Drivers/base/base.h \
- D:/cubeIDE/oled_v1.6/Drivers/LCD12864/lcd12864.h \
- D:/cubeIDE/oled_v1.6/Drivers/DSP/arm_math.h \
- D:/cubeIDE/oled_v1.6/Drivers/NJY_KEY/NJY_KEY.h \
- D:/cubeIDE/oled_v1.6/Drivers/W25QXX/w25qxx.h
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h \
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/LCD12864/lcd12864.h \
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/DSP/arm_math.h \
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/NJY_KEY/NJY_KEY.h \
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/W25QXX/w25qxx.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -78,8 +78,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-D:/cubeIDE/oled_v1.6/Drivers/base/base.h:
-D:/cubeIDE/oled_v1.6/Drivers/LCD12864/lcd12864.h:
-D:/cubeIDE/oled_v1.6/Drivers/DSP/arm_math.h:
-D:/cubeIDE/oled_v1.6/Drivers/NJY_KEY/NJY_KEY.h:
-D:/cubeIDE/oled_v1.6/Drivers/W25QXX/w25qxx.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/LCD12864/lcd12864.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/DSP/arm_math.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/NJY_KEY/NJY_KEY.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/W25QXX/w25qxx.h:

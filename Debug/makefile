@@ -64,8 +64,8 @@ all: main-build
 main-build: oled_v1.6.elf secondary-outputs
 
 # Tool invocations
-oled_v1.6.elf oled_v1.6.map: $(OBJS) $(USER_OBJS) D:\cubeIDE\oled_v1.6\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "oled_v1.6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\cubeIDE\oled_v1.6\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="oled_v1.6.map" -Wl,--gc-sections -static -L"D:\cubeIDE\oled_v1.6/Drivers/DSP" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+oled_v1.6.elf oled_v1.6.map: $(OBJS) $(USER_OBJS) D:\cubeIDE\B2-oled\oled_v1.6\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "oled_v1.6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\cubeIDE\B2-oled\oled_v1.6\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="oled_v1.6.map" -Wl,--gc-sections -static -L"D:\cubeIDE\B2-oled\oled_v1.6/Drivers/DSP" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

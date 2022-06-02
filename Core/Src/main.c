@@ -83,7 +83,7 @@ float cur_vol = 0;							//当前电压
 u8 KEY=0;
 
 
-float DES_INT = 0.5	;						//目标电流
+float DES_INT = 2.0;						//目标电流
 u16 adc2_raw[BUF_LEN] = {0};				//adc2原始采样值
 u16 adc2_raw_copy[BUF_LEN] = {0};			//adc2原始采样值备份
 float cur_int = 0;							//当前电压
@@ -133,6 +133,7 @@ float calVol()
 
 		tempVal=adc_raw_copy[i] * 3.3/ 4108;
 		if(tempVal<=1.5)					{tempVal+=0.0025;}
+		else if(tempVal>1.5)				{tempVal-=0.0045;}
 //		else if(tempVal>1.5&&tempVal<=2.0)	{tempVal=tempVal-0.1*tempVal+0.2;}
 //		V=adc_raw_copy[i];
 		sum+=tempVal;
@@ -158,9 +159,9 @@ float calInt()
 	float tempIns;
 	for(i=0;i<BUF_LEN;i++)
 	{
-		tempIns=adc2_raw_copy[i] * 3.3 / 4060;
-		if(tempIns<=1.5)					{tempIns+=0.042;}
-		else if(tempIns>1.5&&tempIns<=2.0)	{tempIns=tempIns-0.1*tempIns+0.2;}
+		tempIns=adc2_raw_copy[i] * 3.3 / 4095;
+//		if(tempIns<=1.5)					{tempIns+=0.042;}
+//		else if(tempIns>1.5&&tempIns<=2.0)	{tempIns=tempIns-0.1*tempIns+0.2;}
 		sum+=tempIns;
 	}
 

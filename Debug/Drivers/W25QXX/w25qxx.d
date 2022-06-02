@@ -31,8 +31,9 @@ Drivers/W25QXX/w25qxx.o: ../Drivers/W25QXX/w25qxx.c ../Core/Inc/spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Drivers/W25QXX/w25qxx.h D:/cubeIDE/oled_v1.6/Drivers/base/base.h \
- ../Core/Inc/main.h ../Core/Inc/gpio.h
+ ../Drivers/W25QXX/w25qxx.h \
+ D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h ../Core/Inc/main.h \
+ ../Core/Inc/gpio.h
 ../Core/Inc/spi.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -68,6 +69,6 @@ Drivers/W25QXX/w25qxx.o: ../Drivers/W25QXX/w25qxx.c ../Core/Inc/spi.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Drivers/W25QXX/w25qxx.h:
-D:/cubeIDE/oled_v1.6/Drivers/base/base.h:
+D:/cubeIDE/B2-oled/oled_v1.6/Drivers/base/base.h:
 ../Core/Inc/main.h:
 ../Core/Inc/gpio.h:
