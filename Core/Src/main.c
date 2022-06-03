@@ -32,7 +32,7 @@
 #include "arm_math.h"
 #include "NJY_KEY.h"
 #include "w25qxx.h"
-
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +59,8 @@ PidCtrlTypedef pid2;						//电流pid
 #define MAX_PWM					0.78		//最大占空比
 #define MIN_PWM					0.01		//最大占空比
 #define Vol_step					0.1/6		//Vol步进，步进0.1，硬件采集/6倍
+#define VtoI						1.025/2			//电压转电流倍率
+
 
 #define blockade HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET)
 #define blockadeOFF HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET)
@@ -68,6 +70,31 @@ PidCtrlTypedef pid2;						//电流pid
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
+//串口重定向
+#ifdef  __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch,FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+    HAL_UART_Transmit(&huart1,(uint8_t*)&ch,1,HAL_MAX_DELAY);
+    return ch;
+}
+int _write(int file,char *ptr,int len)
+{
+    int Dataldx;
+
+    for(Dataldx=0;Dataldx<len;Dataldx++)
+    {
+    	__io_putchar(*ptr++);
+
+    }
+    return len;
+}
+//串口重定向
 
 /* USER CODE END PM */
 
@@ -86,8 +113,8 @@ u8 KEY=0;
 float DES_INT = 2.0;						//目标电流
 u16 adc2_raw[BUF_LEN] = {0};				//adc2原始采样值
 u16 adc2_raw_copy[BUF_LEN] = {0};			//adc2原始采样值备份
-float cur_int = 0;							//当前电压
-
+float cur_int = 2.2;							//当前电压
+int V_count = 12;								//步进
 
 /* USER CODE END PV */
 
@@ -131,15 +158,18 @@ float calVol()
 	for(i=0;i<BUF_LEN;i++)
 	{
 
-		tempVal=adc_raw_copy[i] * 3.3/ 4108;
-		if(tempVal<=1.5)					{tempVal+=0.0025;}
-		else if(tempVal>1.5)				{tempVal-=0.0045;}
+		tempVal=adc_raw_copy[i] * 3.3/ 4095;
+//		if(tempVal<=1.5)					{tempVal+=0.0025;}
+//		else if(tempVal>1.5)				{tempVal-=0.0045;}
 //		else if(tempVal>1.5&&tempVal<=2.0)	{tempVal=tempVal-0.1*tempVal+0.2;}
 //		V=adc_raw_copy[i];
 		sum+=tempVal;
 	}
 
 	res = sum / BUF_LEN;
+//	if(res > 1 && res <= 2.5)						{res-=0.01;}
+//	else if(res > 2.5 && res <= 3.1)				{res-=0.026667;}
+	if(res>1)										{res-=(DES_VOL-cur_int*3.15);}
 	V=res;						//AD校准
 	cur_vol = res;
 //	sprintf(buf,"%.3f",cur_vol*6);
@@ -166,9 +196,9 @@ float calInt()
 	}
 
 	res = sum / BUF_LEN;
-
+	res*=VtoI;
 	cur_int = res;
-	sprintf(buf,"%.3f",cur_int);
+	sprintf(buf,"%.5f",cur_int);
 	display_GB2312_string(5,1,buf);
 
 	return res;
@@ -276,11 +306,11 @@ void keySwitch()
 		 }
 		 case 3:
 		 {
-			 HAL_Delay(100);DES_VOL+=Vol_step;break;
+			 HAL_Delay(100);DES_VOL=Vol_step*(++V_count);break;
 		 }
 		 case 4:
 		 {
-			 HAL_Delay(100);DES_VOL-=Vol_step;break;
+			 HAL_Delay(100);DES_VOL=Vol_step*(--V_count);break;
 		 }
 		 case 5:
 		 {
@@ -292,11 +322,11 @@ void keySwitch()
 		 }
 		 case 7:
 		 {
-			 HAL_Delay(100);DES_VOL+=10*Vol_step;break;
+			 HAL_Delay(100);DES_VOL=Vol_step*(V_count+=10);break;
 		 }
 		 case 8:
 		 {
-			 HAL_Delay(100);DES_VOL-=10*Vol_step;break;
+			 HAL_Delay(100);DES_VOL=Vol_step*(V_count-=10);break;
 		 }
 		 case 9:
 		 {
@@ -348,8 +378,8 @@ void keyGet()
 	 sprintf(buf,"%02.3f",DES_VOL*6);
 	 display_GB2312_string(3,60,buf);
 
-	 sprintf(buf,"%02d",DES_INT);
-	 display_GB2312_string(5,60,buf);
+	 sprintf(buf,"%.2f",DES_INT);
+	 display_GB2312_string(5,80,buf);
 
 
 }
@@ -372,6 +402,14 @@ void numError()
 	if(DES_INT >= 2.4)
 	{
 		DES_INT=2.4;
+	}
+	if(V_count <= 0)
+	{
+		V_count = 0;
+	}
+	if(V_count >= 180)
+	{
+		V_count = 180;
 	}
 }
 
@@ -433,6 +471,8 @@ int main(void)
 
   LED_OFF;
 
+  delay_ms(500);
+  setPidState();
 
   /* USER CODE END 2 */
 
